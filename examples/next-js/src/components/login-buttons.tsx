@@ -33,11 +33,13 @@ const LoginButtons = () => {
 
     const loginWithCode = provider.useGoogleLogin({
         flow: 'auth-code',
+        ux_mode: 'redirect',
         onSuccess: onGoogleLoginSuccess,
         onError: (res) => console.error('Failed to login with google', res),
     })
     const loginWithToken = provider.useGoogleLogin({
         flow: 'implicit',
+        prompt: 'select_account', 
         onSuccess: (tokenResponse) => {
             console.log("(implicit) tokenResponse: ", tokenResponse)
             const hasGrantedAnyScope = hasGrantedAnyScopeGoogle(

@@ -1,4 +1,6 @@
-import { GoogleOAuthProvider } from 'google-oauth-gsi';
+import { GoogleOAuthProvider,googleLogout } from 'google-oauth-gsi';
+
+googleLogout(); 
 
 export const provider = new GoogleOAuthProvider({
     clientId: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID!,

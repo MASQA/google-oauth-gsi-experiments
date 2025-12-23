@@ -100,5 +100,8 @@
         "oauth",
         "oauth2",
         "google-signin"
-    ]
+    ],
+    "dependencies": {
+        "google-oauth-gsi": "^4.0.1"
+    }
 }
