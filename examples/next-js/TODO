@@ -1,1 +1,21 @@
+# Настройка Google Cloud Console
+
+## Redirect URIs
+Добавить в Google Cloud Console → Credentials → OAuth 2.0 Client IDs → Authorized redirect URIs:
+
+1. `http://localhost:3000/api/auth/google` (для localStorage версии)
+2. `http://localhost:3000/api/auth/google-http-only` (для HttpOnly cookie версии)
+
+# Задачи
+
+## FedCM Component
 Добавить компонет, который использует FedCM https://developers.google.com/identity/gsi/web/guides/get-google-api-clientid?hl=ru#one-tap-using-fedcm
+
+## HttpOnly Cookie Implementation
+- [x] Создать API endpoint `/api/auth/google-http-only`
+- [x] Создать страницу `/dashboard-http-only`
+- [x] Создать API для получения информации о пользователе `/api/user-info`
+- [x] Создать API для выхода `/api/auth/logout`
+- [x] Добавить кнопку в компонент login-buttons
+- [ ] Добавить redirect URI в Google Cloud Console !!!!!!!!!! Note: It may take 5 minutes to a few hours for settings to take effect
+- [ ] Протестировать HttpOnly cookie flow

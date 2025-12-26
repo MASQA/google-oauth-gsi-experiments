@@ -1,8 +1,9 @@
 import { Credentials, OAuth2Client } from 'google-auth-library';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { serialize } from 'cookie';
 
 // Централизованное управление константами
-const REDIRECT_URI = 'http://localhost:3000/api/auth/google';
+const REDIRECT_URI = 'http://localhost:3000/api/auth/google-http-only';
 const ERROR_MESSAGES = {
     METHOD_NOT_ALLOWED: 'Method Not Allowed',
     MISSING_CODE: 'No code provided',
@@ -37,6 +38,7 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Credentials | ErrorResponse | string>
 ) {
+    // Разрешить и GET и POST
     if (req.method !== 'POST' && req.method !== 'GET') {
         return res.status(HTTP_STATUS.METHOD_NOT_ALLOWED).json({
             message: ERROR_MESSAGES.METHOD_NOT_ALLOWED
@@ -44,21 +46,31 @@ export default async function handler(
     }
 
     try {
+        // Для GET запроса код будет в query параметрах
         const code = req.method === 'GET' 
             ? req.query.code as string
             : req.body.code;
-
+        
         const credential = req.body.credential;
 
-        // Обработка credential от Google Sign-In (новый метод)
-        if (credential) {
-            const userInfo = await verifyGoogleToken(credential);
-            return res.status(HTTP_STATUS.SUCCESS).json(userInfo);
-        }
-
-        // Обработка code от традиционного OAuth flow (старый метод)
+        // Обработка code от традиционного OAuth flow
         if (code) {
             const tokens = await exchangeCodeForTokens(code);
+            
+            // Устанавливаем HttpOnly cookie
+            const cookieOptions = {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production', // Только HTTPS в production
+                sameSite: 'lax' as const,
+                maxAge: 60 * 60 * 24 * 7, // 7 дней
+                path: '/',
+            };
+
+            // Сохраняем id_token в cookie
+            res.setHeader('Set-Cookie', [
+                serialize('google_token', tokens.id_token || '', cookieOptions),
+                serialize('google_access_token', tokens.access_token || '', cookieOptions),
+            ]);
             
             // Если это GET запрос от Google OAuth redirect, возвращаем HTML страницу
             if (req.method === 'GET') {
@@ -68,10 +80,8 @@ export default async function handler(
 <head>
     <title>Authentication Successful</title>
     <script>
-        // Сохраняем токен в localStorage
-        localStorage.setItem('google_token', '${tokens.id_token}');
-        // Перенаправляем на страницу приложения
-        window.location.href = '/dashboard';
+        // Токен уже в HttpOnly cookie, просто перенаправляем
+        window.location.href = '/dashboard-http-only';
     </script>
 </head>
 <body>
@@ -126,38 +136,4 @@ async function exchangeCodeForTokens(code: string): Promise<Credentials> {
     }
 
     return tokens;
-}
-
-async function verifyGoogleToken(credential: string): Promise<any> {
-    try {
-        // Создаем OAuth2Client для верификации токена
-        const client = new OAuth2Client(process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID);
-        
-        // Верифицируем ID token
-        const ticket = await client.verifyIdToken({
-            idToken: credential,
-            audience: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-        });
-        
-        const payload = ticket.getPayload();
-        
-        if (!payload) {
-            throw new Error(ERROR_MESSAGES.TOKEN_VERIFICATION_FAILURE);
-        }
-        
-        // Возвращаем информацию о пользователе
-        return {
-            id_token: credential,
-            name: payload.name,
-            email: payload.email,
-            picture: payload.picture,
-            // Добавляем другие поля, если нужно
-            sub: payload.sub,
-            email_verified: payload.email_verified
-        };
-        
-    } catch (error) {
-        console.error('Token verification error:', error);
-        throw new Error(ERROR_MESSAGES.TOKEN_VERIFICATION_FAILURE);
-    }
 }
