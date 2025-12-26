@@ -37,14 +37,18 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse<Credentials | ErrorResponse>
 ) {
-    if (req.method !== 'POST') {
+    if (req.method !== 'POST' && req.method !== 'GET') {
         return res.status(HTTP_STATUS.METHOD_NOT_ALLOWED).json({
             message: ERROR_MESSAGES.METHOD_NOT_ALLOWED
         });
     }
 
     try {
-        const { code, credential } = req.body;
+        const code = req.method === 'GET' 
+            ? req.query.code as string
+            : req.body.code;
+
+        const credential = req.body.credential;
 
         // Обработка credential от Google Sign-In (новый метод)
         if (credential) {

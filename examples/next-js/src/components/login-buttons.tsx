@@ -34,6 +34,8 @@ const LoginButtons = () => {
     const loginWithCode = provider.useGoogleLogin({
         flow: 'auth-code',
         ux_mode: 'redirect',
+        select_account: true, 
+        redirect_uri: 'http://localhost:3000/api/auth/google',
         onSuccess: onGoogleLoginSuccess,
         onError: (res) => console.error('Failed to login with google', res),
     })
