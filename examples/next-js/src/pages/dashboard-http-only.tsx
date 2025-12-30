@@ -66,19 +66,35 @@ const DashboardHttpOnly = () => {
         <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '30px' }}>
                 <h1>Dashboard (HttpOnly Cookie)</h1>
-                <button 
-                    onClick={handleLogout}
-                    style={{ 
-                        padding: '10px 20px', 
-                        backgroundColor: '#ff4444', 
-                        color: 'white', 
-                        border: 'none', 
-                        borderRadius: '5px', 
-                        cursor: 'pointer' 
-                    }}
-                >
-                    Logout
-                </button>
+                <div>
+                    <button
+                        onClick={() => window.location.href = '/dashboard-privileges'}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#2196f3',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                            marginRight: '10px'
+                        }}
+                    >
+                        Privileges Demo
+                    </button>
+                    <button
+                        onClick={handleLogout}
+                        style={{
+                            padding: '10px 20px',
+                            backgroundColor: '#ff4444',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
 
             <div style={{ 
@@ -107,15 +123,42 @@ const DashboardHttpOnly = () => {
                     <p><strong>Email Verified:</strong> {userInfo.email_verified ? 'Yes' : 'No'}</p>
                 )}
                 
-                <div style={{ 
-                    marginTop: '20px', 
-                    padding: '10px', 
-                    backgroundColor: '#e8f5e8', 
+                <div style={{
+                    marginTop: '20px',
+                    padding: '10px',
+                    backgroundColor: '#e8f5e8',
                     borderRadius: '5px',
                     fontSize: '14px'
                 }}>
                     <p><strong>Security:</strong> Token stored in HttpOnly cookie</p>
                     <p><strong>Benefits:</strong> More secure, not accessible via JavaScript</p>
+                </div>
+
+                <div style={{
+                    marginTop: '20px',
+                    padding: '15px',
+                    backgroundColor: '#e3f2fd',
+                    borderRadius: '5px',
+                    border: '1px solid #bbdefb'
+                }}>
+                    <h3 style={{ margin: '0 0 10px 0' }}>🚀 Try Privileges Demo</h3>
+                    <p style={{ margin: '0 0 15px 0', fontSize: '14px' }}>
+                        Test the new secure system with server-side privilege management
+                    </p>
+                    <button
+                        onClick={() => window.location.href = '/dashboard-privileges'}
+                        style={{
+                            padding: '8px 16px',
+                            backgroundColor: '#2196f3',
+                            color: 'white',
+                            border: 'none',
+                            borderRadius: '5px',
+                            cursor: 'pointer',
+                            fontSize: '14px'
+                        }}
+                    >
+                        Go to Privileges Dashboard
+                    </button>
                 </div>
             </div>
         </div>
